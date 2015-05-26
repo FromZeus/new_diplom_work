@@ -15,17 +15,17 @@ class HopfNeuron:
     if not self.mem:
       mem = [[0] * self.im_size for el in xrange(self.im_size)]
 
-  def learn(self, img):
+  def learn(self, image):
     for idx1 in xrange(self.im_size):
       assoc = 0.0
       for idx2 in xrange(idx1):
-        assoc += img[idx1] * img[idx2]
-        self.mem[idx2][idx1] = self.mem[idx1][idx2] = assoc / im_size
+        assoc += image[idx1] * image[idx2]
+        self.mem[idx2][idx1] = self.mem[idx1][idx2] = assoc / self.im_size
     self.img_in_memory += 1
 
-  def recognize(self, img):
+  def recognize(self, image):
     converg = 0
-    result_img = np.copy(img)
+    result_img = np.copy(image)
     for idx in xrange(10):
       pred_img = result_img
       col = 0

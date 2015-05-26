@@ -2,12 +2,28 @@ import numpy as np
 import re
 from os import listdir
 from os.path import isfile, join
+from skimage.filters import threshold_otsu, threshold_adaptive
 import Image
 
 extention_filter = re.compile(".*(.png|.jpg)")
 
 def sign(x):
   return 1 if x > 0 else 0
+
+def transform_to_neuro_form(image):
+  return np.array([-1 if el else 1 for el in np.nditer(image)])
+
+def get_bin_image_otsu(images, new_size):
+  bin_images = []
+  for image in images:
+    black_white_im = np.array(image.convert("L"))
+    otsu_thresh = threshold_otsu(black_white_im)
+    otsu_im = black_white_im > otsu_thresh
+    croped_im = crop(otsu_im, image.size)
+    for_resize = Image.fromarray(croped_im.astype("uint8") * 255)
+    resized_im = for_resize.resize(new_size)
+    bin_images.append(np.array([False if not el else True for el in resized_im.getdata()]))
+  return bin_images
 
 def crop(image, size):
   min_x, min_y = size

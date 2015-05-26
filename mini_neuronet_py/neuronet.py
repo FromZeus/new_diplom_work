@@ -10,9 +10,9 @@ class HopfNet:
     for el in self.rec_objs:
       self.neurons[el[0]] = neuron.HopfNeuron(el[1])
 
-  def learn(self, img, name):
-    self.neurons[name].learn(img)
+  def learn(self, image, name):
+    self.neurons[name].learn(image)
 
-  def recognize(self, img):
+  def recognize(self, image):
     for name, neuron in self.neurons.iteritems():
-      print "{0}: {1}".format(name, neuron.recognize(img))
+      print "{0}: {1}".format(name, neuron.recognize(image))
