@@ -63,3 +63,7 @@ for ax in axes:
     ax.axis('off')
 
 plt.show()
+
+
+  #new_image = Image.new('RGB', (48,48), "white")
+  #new_image.paste(image.crop((min_x, min_y, image.size[0], image.size[1])), x, y)
