@@ -64,7 +64,7 @@ def main():
 
   for name, sect in images.iteritems():
     for idx1, el in enumerate(sect):
-      for idx2, rotated_image in enumerate(get_rotated(el, 0, 360, 15)):
+      for idx2, rotated_image in enumerate(get_rotated(el, -60, 60, 10)):
         filled_rotated_image = fill_edges(rotated_image, 0, 255)
         if filled_rotated_image.mode != "RGBA":
           filled_rotated_image = filled_rotated_image.convert("RGBA")

@@ -40,7 +40,7 @@ def main():
       net.learn(neuro_tools.transform_to_neuro_form(image), sect)
 
   #print net.recognize(neuro_tools.transform_to_neuro_form(bin_images[u"я"][0]))
-  test_im = Image.open("/home/s-quark/Desktop/new_diplom_work/mini_neuronet_py/test2.jpg")
+  test_im = Image.open("/home/dtrishkin/workspace/new_diplom_work/mini_neuronet_py/test1.jpg")
   test_im_formated = neuro_tools.transform_to_neuro_form(
     neuro_tools.get_bin_image_otsu([test_im],(IM_SIZE, IM_SIZE)))
   print net.recognize(test_im_formated)

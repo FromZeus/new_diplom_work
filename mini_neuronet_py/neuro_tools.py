@@ -46,7 +46,9 @@ def load_images(path, sect, images):
       if extention_filter.search(path_to_file):
         if not images.has_key(sect):
           images[sect] = []
-        images[sect].append(Image.open(path_to_file))
+        tmp_image = Image.open(path_to_file)
+        images[sect].append(tmp_image.copy())
+        tmp_image.close()
     else:
       load_images(path_to_file, file_name.decode("utf-8"), images)
 
