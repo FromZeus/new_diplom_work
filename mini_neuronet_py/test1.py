@@ -8,16 +8,20 @@ import argparse
 import pdb
 import yaml
 from skimage.filters import threshold_otsu, threshold_adaptive
+from skimage.transform import rotate
+from skimage import data
 import numpy as np
+import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', dest='config', help='Configuration YAML')
 args = parser.parse_args()
 
-IM_SIZE = 48
+IM_SIZE = 32
 
 def main():
   pdb.set_trace()
+  start = time.time()
   conf = open(args.config, 'r')
   tempConf = yaml.load_all(conf)
   images = dict()
@@ -26,25 +30,22 @@ def main():
     mem_directory = line["MemDirectory"]
 
   neuro_tools.load_images(mem_directory, "", images)
+
   bin_images = dict((sect, neuro_tools.get_bin_image_otsu(images[sect], (IM_SIZE, IM_SIZE)))
     for sect in images.keys())
 
   net = neuronet.HopfNet(zip(images.keys(), [IM_SIZE] * len(images)))
   for sect, images in bin_images.iteritems():
     for image in images:
-      net.learn(image, sect)
+      net.learn(neuro_tools.transform_to_neuro_form(image), sect)
 
-  neuro_tools.load_images(mem_directory, "", images)
-  bw_image = np.array(images["а".decode("utf-8")][0].convert("L"))
-  global_thresh = threshold_otsu(bw_image)
-  binary_global = bw_image > global_thresh
-  test = neuro_tools.crop(binary_global, images["а".decode("utf-8")][0].size)
-  im = Image.fromarray(test.astype("uint8") * 255)
-  new_image = im.resize((48, 48))
-  new_image.show()
-  new_image.save("test.jpg")
-
-  #net1 = neuronet.HopfNet(zip(images.keys(), [el.size[0] for el in images.values()]))
+  #print net.recognize(neuro_tools.transform_to_neuro_form(bin_images[u"я"][0]))
+  test_im = Image.open("/home/s-quark/Desktop/new_diplom_work/mini_neuronet_py/test2.jpg")
+  test_im_formated = neuro_tools.transform_to_neuro_form(
+    neuro_tools.get_bin_image_otsu([test_im],(IM_SIZE, IM_SIZE)))
+  print net.recognize(test_im_formated)
+  end = time.time()
+  print end - start
 
 if __name__ == '__main__':
   main()

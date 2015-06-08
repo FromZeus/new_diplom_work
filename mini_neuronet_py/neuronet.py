@@ -15,4 +15,4 @@ class HopfNet:
 
   def recognize(self, image):
     for name, neuron in self.neurons.iteritems():
-      print "{0}: {1}".format(name, neuron.recognize(image))
+      print u"{0}: {1}".format(name, neuron.recognize(image))
