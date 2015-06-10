@@ -13,7 +13,7 @@ def sign(x):
 def transform_to_neuro_form(image):
   return np.array([-1 if el else 1 for el in np.nditer(image)])
 
-def get_bin_image_otsu(images, new_size):
+def get_bin_symb_otsu(images, new_size):
   bin_images = []
   for image in images:
     black_white_im = np.array(image.convert("L"))
