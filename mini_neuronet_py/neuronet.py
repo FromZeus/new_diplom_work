@@ -1,4 +1,5 @@
 import neuron
+from multiprocessing import Pool
 
 class HopfNet:
 
@@ -14,5 +15,8 @@ class HopfNet:
     self.neurons[name].learn(image)
 
   def recognize(self, image):
+    pool = Pool()
     for name, neuron in self.neurons.iteritems():
-      print u"{0}: {1}".format(name, neuron.recognize(image))
+      res = pool.apply_async(neuron.recognize, [image])
+      print u"{0}: {1}".format(name, res.get(timeout=10)) 
+      #print u"{0}: {1}".format(name, neuron.recognize(image))
