@@ -1,7 +1,6 @@
 <NeuroLayout>:
   from_collection_name: from_collection_txt.text
   to_collection_name: to_collection_txt.text
-  instance_hash: instance_hash_txt.text
 
   canvas.before:
     Color:
@@ -78,7 +77,7 @@
       focus: True
       multiline: False
       pos_hint: {'x': .05, 'y': .05}
-      text: 
+      text: root.instance_hash
     
     Label:
       id: instance_ihash_lbl

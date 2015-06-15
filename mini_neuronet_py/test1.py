@@ -54,7 +54,6 @@ class NeuroLayout(FloatLayout):
 
   images = bin_images = dict()
   net = None
-  instance_hash = ""
 
   for line in tempConf:
     mem_directory = line["MemDirectory"]
@@ -62,7 +61,7 @@ class NeuroLayout(FloatLayout):
     instance_hash = line["InstanceHash"]
     load_mem = line["LoadMemory"]
 
-  pdb.set_trace()
+  #pdb.set_trace()
 
   def learn(self, path = mem_directory):
     neuro_tools.load_images(path, "", self.images)
@@ -163,9 +162,6 @@ class NeuroLayout(FloatLayout):
 
   def hulk_smash(self):
     print Window.size
-
-  def hello(self, test_string):
-    print "Hello {0}".format(test_string)
 
 class NeuronetApp(App):
   icon = 'attracto.png'

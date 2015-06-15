@@ -92,6 +92,7 @@ def main():
 
   for line in tempConf:
     img_directory = line["ImgDirectory"]
+    mem_directory = line["MemDirectory"]
 
   neuro_tools.load_images(img_directory, "", images)
 
@@ -101,17 +102,22 @@ def main():
       images[name].append(get_distorted(el, [("cos", 25.0, 20.0)], "vert"))
       images[name].append(get_distorted(el, [("dilation", 2), ("sin", 25.0, 20.0)]))
       images[name].append(get_distorted(el, [("erosion", 1), ("sin", 25.0, 20.0)]))
+      images[name].append(get_distorted(el, [("dilation", 2)]))
+      images[name].append(get_distorted(el, [("erosion", 1)]))
 
   for name, sect in images.iteritems():
     for idx1, el in enumerate(sect):
-      for idx2, rotated_image in enumerate(get_rotated(el, -60, 60, 30)):
+      for idx2, rotated_image in enumerate(get_rotated(el, 0, 30, 30)):
         filled_rotated_image = fill_edges(rotated_image, 0, 255)
         if filled_rotated_image.mode != "RGBA":
           filled_rotated_image = filled_rotated_image.convert("RGBA")
-        if not os.path.exists("mem_0.3/{0}".format(name.encode("utf-8"))):
-          os.makedirs("mem_0.3/{0}".format(name.encode("utf-8")))
-        filled_rotated_image.save("mem_0.3/{3}/{0}_{1}_{2}.png".format(
-          name.encode("utf-8"), idx1, idx2, name.encode("utf-8")))
+        if not os.path.exists("{0}/{1}".format(
+          mem_directory, name.encode("utf-8"))):
+          os.makedirs("{0}/{1}".format(
+            mem_directory, name.encode("utf-8")))
+        filled_rotated_image.save("{0}/{4}/{1}_{2}_{3}.png".format(
+          mem_directory, name.encode("utf-8"),
+          idx1, idx2, name.encode("utf-8")))
 
   #test_img = Image.open("test/1_з.png".decode("utf-8"))
   #test_img = fill_edges(test_img.convert("L"), 0, 255)
