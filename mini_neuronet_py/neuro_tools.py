@@ -4,6 +4,8 @@ from os import listdir
 from os.path import isfile, join
 from skimage.filters import threshold_otsu, threshold_adaptive
 import Image
+import neuronet
+import dill
 
 extention_filter = re.compile(".*(.png|.jpg)")
 
@@ -51,6 +53,31 @@ def load_images(path, sect, images):
         tmp_image.close()
     else:
       load_images(path_to_file, file_name.decode("utf-8"), images)
+
+def pack_net_instance(instance):
+  bytes_dict = {}
+  bytes_dict["rec_objs"] = dill.dumps(instance.rec_objs)
+  for alpha, net in instance.neurons.iteritems():
+    bytes_dict[alpha] = dill.dumps(net)
+  return bytes_dict
+
+def unpack_net_instance(bytes_dict):
+  net = neuronet.HopfNet(dill.loads(bytes_dict["rec_objs"]), 
+    dict((alpha, dill.loads(bytes_dict[alpha]))
+      for alpha in bytes_dict.keys() if alpha != "rec_objs"))
+  return net
+
+def split_into_chunks(data, chunk_size = 16777000):
+  chunks = []
+  for idx in xrange(0, len(data) + 1, chunk_size):
+    chunks.append(data[idx : idx + chunk_size])
+  return chunks
+
+def merge_chunks(chunks):
+  data = ""
+  for chunk in chunks:
+    data += chunk
+  return data
 
 def binarisation_otsu():
   pass

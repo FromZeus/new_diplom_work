@@ -91,10 +91,10 @@ class NeuroLayout(FloatLayout):
     db = client[db_name]
     db_collection = db[coll_name]
     date_field = 'bin-data from {0}'.format(time.strftime("%d-%m-%Y %H:%M:%S"))
-    thebytes = dill.dumps(self.pack_net_instance(self.net))
+    thebytes = dill.dumps(neuro_tools.pack_net_instance(self.net))
     hash_object = hashlib.md5(thebytes + date_field)
     self.instance_hash = hash_object.hexdigest()
-    chunks = self.split_into_chunks(thebytes)
+    chunks = neuro_tools.split_into_chunks(thebytes)
 
     print "Saving..."
 
@@ -129,36 +129,10 @@ class NeuroLayout(FloatLayout):
     for el in found:
       thebytes += el["bin-data"]
 
-    self.net = self.unpack_net_instance(dill.loads(thebytes)) #dill.loads(thebytes)
+    self.net = neuro_tools.unpack_net_instance(dill.loads(thebytes))
 
     print "Successfully loaded!\nDate: {0}, Hash: {1}"\
       .format(found[0]['date'], found[0]['hash'])
-
-  def pack_net_instance(self, instance):
-    bytes_dict = {}
-    bytes_dict["rec_objs"] = dill.dumps(instance.rec_objs)
-    for alpha, net in instance.neurons.iteritems():
-      bytes_dict[alpha] = dill.dumps(net)
-
-    return bytes_dict
-
-  def unpack_net_instance(self, bytes_dict):
-    net = neuronet.HopfNet(dill.loads(bytes_dict["rec_objs"]), 
-      dict((alpha, dill.loads(bytes_dict[alpha]))
-        for alpha in bytes_dict.keys() if alpha != "rec_objs"))
-    return net
-
-  def split_into_chunks(self, data, chunk_size = 16777000):
-    chunks = []
-    for idx in xrange(0, len(data) + 1, chunk_size):
-      chunks.append(data[idx : idx + chunk_size])
-    return chunks
-
-  def merge_chunks(self, chunks):
-    data = ""
-    for chunk in chunks:
-      data += chunk
-    return data
 
   def hulk_smash(self):
     print Window.size
