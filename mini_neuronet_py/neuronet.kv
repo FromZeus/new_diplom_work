@@ -1,0 +1,87 @@
+<NeuroLayout>:
+  from_collection_name: from_collection_txt.text
+  to_collection_name: to_collection_txt.text
+  instance_hash: instance_hash_txt.text
+
+  canvas.before:
+    Color:
+      rgba: .48, .10, .36, 1
+    Rectangle:
+      # self here refers to the widget i.e FloatLayout
+      pos: self.pos
+      size: self.size
+
+  FloatLayout:
+    Button:
+      id: learn_button
+      text: "Re-educate"
+      on_release: root.learn(training_set_txt.text)
+      pos_hint: {'x': .05, 'y': .80}
+      size_hint: .4, .1
+
+    Button:
+      id: recognize_button
+      text: "Recognize Text"
+      on_release: root.recognize(recognizable_image_txt.text)
+      pos_hint: {'x': .55, 'y': .80}
+      size_hint: .4, .1
+
+    TextInput:
+      id: training_set_txt
+      size_hint: .4, .07
+      focus: True
+      multiline: False
+      pos_hint: {'x': .05, 'y': .7}
+      text: root.mem_directory
+
+    TextInput:
+      id: recognizable_image_txt
+      size_hint: .4, .07
+      focus: True
+      multiline: False
+      pos_hint: {'x': .55, 'y': .7}
+      text: root.recognize_image_path
+
+    Button:
+      id: from_collection_button
+      text: "Load from collection"
+      on_release: root.load_from_db(instance_hash_txt.text, from_collection_txt.text)
+      pos_hint: {'x': .05, 'y': .30}
+      size_hint: .4, .1
+
+    Button:
+      id: to_collection_button
+      text: "Save to collection"
+      on_release: root.save_to_db(to_collection_txt.text)
+      pos_hint: {'x': .55, 'y': .30}
+      size_hint: .4, .1
+
+    TextInput:
+      id: from_collection_txt
+      size_hint: .4, .07
+      focus: True
+      multiline: False
+      pos_hint: {'x': .05, 'y': .2}
+      text: "net0"
+
+    TextInput:
+      id: to_collection_txt
+      size_hint: .4, .07
+      focus: True
+      multiline: False
+      pos_hint: {'x': .55, 'y': .2}
+      text: "net0"
+
+    TextInput:
+      id: instance_hash_txt
+      size_hint: .4, .07
+      focus: True
+      multiline: False
+      pos_hint: {'x': .05, 'y': .05}
+      text: 
+    
+    Label:
+      id: instance_ihash_lbl
+      font_size: 16
+      pos_hint: {'x': -.25, 'y': -.35}
+      text: "Hash of neuro network"

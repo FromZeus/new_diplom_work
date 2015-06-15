@@ -1,0 +1,54 @@
+<TestWidget>:    
+  canvas:
+    Rectangle:
+      pos: self.center_x - 5, 0
+      size: 10, self.height
+          
+  Label:
+    font_size: 70  
+    center_x: root.width / 4
+    top: root.top - 50
+    text: "0"
+      
+  Label:
+    font_size: 70  
+    center_x: root.width * 3 / 4
+    top: root.top - 50
+    text: "0"
+
+<TestLayout>:
+  sample_text: user_input.text
+
+  canvas.before:
+    Color:
+      rgba: .48, .10, .36, 1
+    Rectangle:
+      # self here refers to the widget i.e FloatLayout
+      pos: self.pos
+      size: self.size
+  FloatLayout:
+    Button:
+      id: button1
+      text: "Hello world!"
+      on_release: root.hulk_smash()
+      pos_hint: {'x': .5, 'y': .5}
+      size_hint: .3, .1
+      #markup: True
+      #pos: 200, 200
+
+    TextInput:
+      id: user_input
+      size_hint: .3, .1
+      focus: True
+      multiline: True
+      pos_hint: {'center_x':.2, 'center_y': .1}
+
+    AsyncImage:
+      source: "/home/s-quark/Desktop/imgo.jpeg"
+      size_hint: 1, .5
+      pos_hint: {'center_x':.2, 'center_y': .5}
+
+    Label:
+      font_size: 24
+      text: "Put some text here!)"
+      pos_hint: {'center_x':.2, 'center_y': .2}

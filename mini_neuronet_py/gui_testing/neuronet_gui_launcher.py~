@@ -1,0 +1,2 @@
+import subprocess
+subprocess.Popen(['.', 'neuronet_gui.py', '--size=250x150'], shell=True)

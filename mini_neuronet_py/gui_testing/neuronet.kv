@@ -1,0 +1,72 @@
+<NeuroLayout>:
+  from_collection_name: from_collection_txt.text
+  to_collection_name: to_collection_txt.text
+
+  canvas.before:
+    Color:
+      rgba: .48, .10, .36, 1
+    Rectangle:
+      # self here refers to the widget i.e FloatLayout
+      pos: self.pos
+      size: self.size
+
+  FloatLayout:
+    Button:
+      id: learn_button
+      text: "Re-educate"
+      on_release: root.hulk_smash()
+      pos_hint: {'x': .05, 'y': .80}
+      size_hint: .4, .1
+
+    Button:
+      id: recognize_button
+      text: "Recognize Text"
+      on_release: root.hulk_smash()
+      pos_hint: {'x': .55, 'y': .80}
+      size_hint: .4, .1
+
+    TextInput:
+      id: training_set_txt
+      size_hint: .4, .1
+      focus: True
+      multiline: False
+      pos_hint: {'x':.05, 'y': .6}
+      text: "/home/s-quark/Desktop/new_diplom_work/mini_neuronet_py/mem_0.3"
+
+    TextInput:
+      id: recognizable_image_txt
+      size_hint: .4, .1
+      focus: True
+      multiline: False
+      pos_hint: {'x':.55, 'y': .6}
+      text: "/home/s-quark/Desktop/new_diplom_work/mini_neuronet_py/test_images/test3.jpg"
+
+    Button:
+      id: from_collection_button
+      text: "Load from collection"
+      on_release: root.hulk_smash()
+      pos_hint: {'x': .05, 'y': .30}
+      size_hint: .4, .1
+
+    Button:
+      id: to_collection_button
+      text: "Save to collection"
+      on_release: root.hulk_smash()
+      pos_hint: {'x': .55, 'y': .30}
+      size_hint: .4, .1
+
+    TextInput:
+      id: from_collection_txt
+      size_hint: .4, .1
+      focus: True
+      multiline: False
+      pos_hint: {'x':.05, 'y': .1}
+      text: "net0"
+
+    TextInput:
+      id: to_collection_txt
+      size_hint: .4, .1
+      focus: True
+      multiline: False
+      pos_hint: {'x':.55, 'y': .1}
+      text: "net0"
