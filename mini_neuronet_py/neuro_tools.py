@@ -54,6 +54,9 @@ def load_images(path, sect, images):
     else:
       load_images(path_to_file, file_name.decode("utf-8"), images)
 
+def stretch_image(image):
+  pass
+
 def pack_net_instance(instance):
   bytes_dict = {}
   bytes_dict["rec_objs"] = dill.dumps(instance.rec_objs)
