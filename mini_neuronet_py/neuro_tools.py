@@ -15,20 +15,32 @@ def sign(x):
 def transform_to_neuro_form(image):
   return np.array([-1 if el else 1 for el in np.nditer(image)])
 
-def get_bin_symb_otsu(images, new_size):
+def format_bin_image(images, new_size):
+
+  def ft_translation(x):
+    return True if x else False
+  v_ft_translation = np.vectorize(ft_translation)
+
+  resized_images = []
+  for image in images:
+    for_resize = Image.fromarray(image.astype("uint8") * 255)
+    resized_im = for_resize.resize(new_size)
+    resized_images.append(v_ft_translation(resized_im.getdata()).reshape(new_size))
+  return resized_images
+
+def get_bin_symb_otsu(images):
+
   bin_images = []
   for image in images:
     black_white_im = np.array(image.convert("L"))
     otsu_thresh = threshold_otsu(black_white_im)
     otsu_im = black_white_im > otsu_thresh
-    croped_im = crop_alpha(otsu_im, image.size)
-    for_resize = Image.fromarray(croped_im.astype("uint8") * 255)
-    resized_im = for_resize.resize(new_size)
-    bin_images.append(np.array([False if not el else True for el in resized_im.getdata()]). \
-      reshape(new_size))
+    croped_im = bin_crop_alpha(otsu_im, image.size)
+    bin_images.append(croped_im)
+
   return bin_images
 
-def crop_alpha(bin_image, size):
+def bin_crop_alpha(bin_image, size):
   min_x, min_y = size
   max_x, max_y = (0, 0)
   for idx_y, y_el in enumerate(bin_image):
@@ -56,31 +68,31 @@ def load_images(path, sect, images):
 
 def stretch_image(bin_image, shift, center = None):
   if not center:
-    center = (bin_image.size[0] / 2, bin_image[1] / 2)
-  relative_shift = (shift[0] * bin_image.size[0] / 10,
-    shift[1] * bin_image.size[1] / 10)
+    center = (bin_image.shape[0] / 2, bin_image.shape[1] / 2)
+  relative_shift = (shift[0] * bin_image.shape[0] / 10,
+    shift[1] * bin_image.shape[1] / 10)
 
   def shift_pix_lr(lr, part):
-    black = np.arange(relative_shift)
-    black.fill(False)
-    white = np.arange(relative_shift)
-    white.fill(True)
+    actual_shift = relative_shift[1]
 
     l = 1 if lr == "l" else 0
     r = 1 if lr == "r" else 0
+    l_bool = bool(r)
+    r_bool = bool(l)
+
+    def loop_direction(indexes):
+      return reversed(list(indexes)) if l else indexes
 
     for idx_y, y_el in enumerate(part):
-      for idx_x, x_el in enumerate(y_el):
+      for idx_x, x_el in loop_direction(enumerate(y_el)):
         if not x_el:
           if idx_x > 0 and idx_x < len(y_el) - 1:
             if y_el[idx_x - 1]:
-              part[idx_y, max(0, idx_x - relative_shift * l): \
-                min(len(idx_y) - 1, idx_x + relative_shift * r)] = \
-                  black if lrud == "l" else white
+              part[idx_y, max(0, idx_x - actual_shift * l): \
+                min(len(y_el) - 1, idx_x + actual_shift * r)].fill(l_bool)
             if y_el[idx_x + 1]:
-              part[idx_y, max(0, idx_x - relative_shift * l + 1): \
-                min(len(idx_y) - 1, idx_x + relative_shift * r + 1)] = \
-                  white if lrud == "l" else black
+              part[idx_y, max(0, idx_x - actual_shift * l + 1): \
+                min(len(y_el) - 1, idx_x + actual_shift * r + 1)].fill(r_bool)
 
   stretched_image = np.array(bin_image)
 
@@ -88,8 +100,8 @@ def stretch_image(bin_image, shift, center = None):
     left_part = stretched_image[:,:center[1]]
     right_part = stretched_image[:,center[1]:]
 
-    left_part = shift_pix_lr("l", left_part)
-    right_part = shift_pix_lr("r", right_part)
+    shift_pix_lr("l", left_part)
+    shift_pix_lr("r", right_part)
 
   stretched_image = np.append(left_part.T, right_part.T, axis = 0).T
 
@@ -97,7 +109,7 @@ def stretch_image(bin_image, shift, center = None):
     up_part = bin_image[:center[0],:]
     down_part = bin_image[center[0]:,:]
 
-  stretched_image = np.append(up_part, down_part, axis = 0)
+    stretched_image = np.append(up_part, down_part, axis = 0)
 
   return stretched_image
 

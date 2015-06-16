@@ -61,26 +61,34 @@ class NeuroLayout(FloatLayout):
     instance_hash = line["InstanceHash"]
     load_mem = line["LoadMemory"]
 
-  #pdb.set_trace()
+  pdb.set_trace()
 
   def learn(self, path = mem_directory):
     neuro_tools.load_images(path, "", self.images)
 
-    bin_images = dict((sect, neuro_tools.get_bin_symb_otsu(self.images[sect],
-      (IM_SIZE, IM_SIZE)))
+    formated_bin_images = dict((sect,
+      neuro_tools.format_bin_image(neuro_tools.get_bin_symb_otsu(self.images[sect]),
+        (IM_SIZE, IM_SIZE)))
     for sect in self.images.keys())
 
     self.net = neuronet.HopfNet(zip(self.images.keys(), [IM_SIZE] * len(self.images)))
-    for sect, images in bin_images.iteritems():
+    for sect, images in formated_bin_images.iteritems():
       for image in images:
         self.net.learn(neuro_tools.transform_to_neuro_form(image), sect)
 
   def recognize(self, path = recognize_image_path):
     test_im = Image.open(path)
-    #buf_im = neuro_tools.get_bin_symb_otsu([test_im],(IM_SIZE, IM_SIZE))
-    # Add stretch and show it
+
+    bw_im = np.array(test_im.convert("L"))
+    thr = threshold_otsu(bw_im)
+    buf_im = bw_im > thr
+    res = neuro_tools.stretch_image(buf_im, (0, 1))
+    out_im = Image.fromarray(res.astype("uint8") * 255)
+    out_im.show()
+
     test_im_formated = neuro_tools.transform_to_neuro_form(
-      neuro_tools.get_bin_symb_otsu([test_im],(IM_SIZE, IM_SIZE)))
+      neuro_tools.format_bin_image(neuro_tools.get_bin_symb_otsu([test_im]),
+        (IM_SIZE, IM_SIZE)))
     print self.net.recognize(test_im_formated)
 
   def save_to_db(self,
