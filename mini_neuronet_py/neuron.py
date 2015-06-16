@@ -15,7 +15,8 @@ class HopfNeuron:
     self.img_in_memory = img_in_memory
     self.mem = np.copy(ext_mem)
     if not self.mem:
-      self.mem = np.array([[0.0] * self.im_size_sq for el in xrange(self.im_size_sq)])
+      self.mem = np.array([np.arange(im_size)] * im_size)
+      self.mem.fill(0.0)
 
   def learn(self, image):
     for idx1 in xrange(self.im_size_sq):

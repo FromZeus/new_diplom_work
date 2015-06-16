@@ -77,6 +77,8 @@ class NeuroLayout(FloatLayout):
 
   def recognize(self, path = recognize_image_path):
     test_im = Image.open(path)
+    #buf_im = neuro_tools.get_bin_symb_otsu([test_im],(IM_SIZE, IM_SIZE))
+    # Add stretch and show it
     test_im_formated = neuro_tools.transform_to_neuro_form(
       neuro_tools.get_bin_symb_otsu([test_im],(IM_SIZE, IM_SIZE)))
     print self.net.recognize(test_im_formated)
