@@ -1,6 +1,5 @@
 <NeuroLayout>:
-  from_collection_name: from_collection_txt.text
-  to_collection_name: to_collection_txt.text
+  collection_name: collection_txt.text
 
   canvas.before:
     Color:
@@ -44,31 +43,30 @@
     Button:
       id: from_collection_button
       text: "Load from collection"
-      on_release: root.load_from_db(instance_hash_txt.text, from_collection_txt.text)
-      pos_hint: {'x': .05, 'y': .30}
+      on_release: root.load_from_db(instance_hash_txt.text, collection_txt.text)
+      pos_hint: {'x': .55, 'y': .45}
       size_hint: .4, .1
 
     Button:
       id: to_collection_button
       text: "Save to collection"
-      on_release: root.save_to_db(to_collection_txt.text)
+      on_release: root.save_to_db(collection_txt.text)
       pos_hint: {'x': .55, 'y': .30}
       size_hint: .4, .1
 
-    TextInput:
-      id: from_collection_txt
-      size_hint: .4, .07
-      focus: True
-      multiline: False
-      pos_hint: {'x': .05, 'y': .2}
-      text: "net0"
+    Button:
+      id: clear_collection_button
+      text: "Clear collection"
+      on_release: root.clear_collection(collection_txt.text)
+      pos_hint: {'x': .55, 'y': .15}
+      size_hint: .4, .1
 
     TextInput:
-      id: to_collection_txt
+      id: collection_txt
       size_hint: .4, .07
       focus: True
       multiline: False
-      pos_hint: {'x': .55, 'y': .2}
+      pos_hint: {'x': .05, 'y': .45}
       text: "net0"
 
     TextInput:
@@ -76,11 +74,17 @@
       size_hint: .4, .07
       focus: True
       multiline: False
-      pos_hint: {'x': .05, 'y': .05}
+      pos_hint: {'x': .05, 'y': .3}
       text: root.instance_hash
     
     Label:
       id: instance_ihash_lbl
       font_size: 16
-      pos_hint: {'x': -.25, 'y': -.35}
+      pos_hint: {'x': -.25, 'y': -.1}
       text: "Hash of neuro network"
+
+    Label:
+      id: collection_name_lbl
+      font_size: 16
+      pos_hint: {'x': -.25, 'y': .05}
+      text: "Collection name"

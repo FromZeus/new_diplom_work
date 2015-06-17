@@ -61,7 +61,7 @@ class NeuroLayout(FloatLayout):
     instance_hash = line["InstanceHash"]
     load_mem = line["LoadMemory"]
 
-  pdb.set_trace()
+  #pdb.set_trace()
 
   def learn(self, path = mem_directory):
     neuro_tools.load_images(path, "", self.images)
@@ -78,24 +78,22 @@ class NeuroLayout(FloatLayout):
 
   def recognize(self, path = recognize_image_path):
     test_im = Image.open(path)
-
-    bw_im = np.array(test_im.convert("L"))
-    thr = threshold_otsu(bw_im)
-    buf_im = bw_im > thr
-    res = neuro_tools.stretch_image(buf_im, (0, 1))
-    out_im = Image.fromarray(res.astype("uint8") * 255)
-    out_im.show()
-
     test_im_formated = neuro_tools.transform_to_neuro_form(
       neuro_tools.format_bin_image(neuro_tools.get_bin_symb_otsu([test_im]),
         (IM_SIZE, IM_SIZE)))
-    print self.net.recognize(test_im_formated)
+    sorted_res = sorted(self.net.recognize(test_im_formated), key = lambda x: x[0])
+    for name, res in sorted_res:
+      print u"{0}: {1}".format(name, res)
+    min_el = min(sorted_res, key = lambda x: x[1])
+    print u"\n{0}: {1}".format(min_el[0], min_el[1])
 
   def save_to_db(self,
     coll_name  = "test_collection",
     db_name    = "neuronet",
     ip_address = "localhost",
     port       = 27017):
+
+    print "Saving..."
 
     client = MongoClient(ip_address, port)
     db = client[db_name]
@@ -105,8 +103,6 @@ class NeuroLayout(FloatLayout):
     hash_object = hashlib.md5(thebytes + date_field)
     self.instance_hash = hash_object.hexdigest()
     chunks = neuro_tools.split_into_chunks(thebytes)
-
-    print "Saving..."
 
     for idx, chunk in enumerate(chunks):
       db_collection.insert(
@@ -143,6 +139,20 @@ class NeuroLayout(FloatLayout):
 
     print "Successfully loaded!\nDate: {0}, Hash: {1}"\
       .format(found[0]['date'], found[0]['hash'])
+
+  def clear_collection(self,
+    coll_name     = "test_collection",
+    db_name       = "neuronet",
+    ip_address    = "localhost",
+    port          = 27017):
+
+    client = MongoClient(ip_address, port)
+    db = client[db_name]
+    db_collection = db[coll_name]
+
+    print db_collection.remove({})
+
+    print "Collection has been cleared successfully!"
 
   def hulk_smash(self):
     print Window.size
