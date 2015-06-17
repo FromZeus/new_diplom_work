@@ -81,11 +81,14 @@ class NeuroLayout(FloatLayout):
     test_im_formated = neuro_tools.transform_to_neuro_form(
       neuro_tools.format_bin_image(neuro_tools.get_bin_symb_otsu([test_im]),
         (IM_SIZE, IM_SIZE)))
+    t1 = time.time()
     sorted_res = sorted(self.net.recognize(test_im_formated), key = lambda x: x[0])
+    t2 = time.time()
     for name, res in sorted_res:
       print u"{0}: {1}".format(name, res)
     min_el = min(sorted_res, key = lambda x: x[1])
     print u"\n{0}: {1}".format(min_el[0], min_el[1])
+    print t2 - t1
 
   def save_to_db(self,
     coll_name  = "test_collection",

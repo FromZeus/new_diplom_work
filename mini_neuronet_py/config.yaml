@@ -1,7 +1,7 @@
-MemDirectory: "/home/s-quark/Desktop/new_diplom_work/mini_neuronet_py/mem_1.0"
+MemDirectory: "/home/s-quark/Desktop/new_diplom_work/mini_neuronet_py/mem_1.1"
 RecognizeImage: "/home/s-quark/Desktop/new_diplom_work/mini_neuronet_py/test_images/test8.jpg"
 InstanceId: "557dcbc748b758255c4c5fd6"
-InstanceHash: "456ca455722dbf8c9070751cded50c7c"
+InstanceHash: "4855bda5edab0479d7d20cba60a9313e"
 LoadMemory: True
 # MemDirectory: "/home/dtrishkin/Desktop/new_diplom_work/mini_neuronet_py/mem_0.4"
 # RecognizeImage: "/home/dtrishkin/Desktop/new_diplom_work/mini_neuronet_py/test_images/test3.jpg"
