@@ -5,6 +5,8 @@ import sys
 import neuronet
 import neuro_tools
 import Image
+from PIL import ImageFont
+from PIL import ImageDraw
 import argparse
 import pdb
 import yaml
@@ -64,6 +66,9 @@ class NeuroLayout(FloatLayout):
   #pdb.set_trace()
 
   def learn(self, path = mem_directory):
+    print "Re-education in progress..."
+
+    t1 = time.time()
     neuro_tools.load_images(path, "", self.images)
 
     formated_bin_images = dict((sect,
@@ -76,18 +81,39 @@ class NeuroLayout(FloatLayout):
       for image in images:
         self.net.learn(neuro_tools.transform_to_neuro_form(image), sect)
 
+    print time.time() - t1
+    print "Re-education has been finished successfully!"
+
   def recognize(self, path = recognize_image_path):
+    pool = mp.Pool()
     test_im = Image.open(path)
-    test_im_formated = neuro_tools.transform_to_neuro_form(
-      neuro_tools.format_bin_image(neuro_tools.get_bin_symb_otsu([test_im]),
-        (IM_SIZE, IM_SIZE)))
+    draw = ImageDraw.Draw(test_im)
+    font = ImageFont.truetype("/usr/share/fonts/dejavu/DejaVuSans.ttf", test_im.size[0] / 25)
+    #test_im_formated = neuro_tools.transform_to_neuro_form(
+    #  neuro_tools.format_bin_image(neuro_tools.get_bin_symb_otsu([test_im]),
+    #    (IM_SIZE, IM_SIZE)))
+    def calc():
+      min_el = min(self.net.recognize(
+        neuro_tools.transform_to_neuro_form(
+          neuro_tools.format_bin_image([symb[0]], (IM_SIZE, IM_SIZE)))),
+            key = lambda x: x[1])
+      return min_el
+     
     t1 = time.time()
-    sorted_res = sorted(self.net.recognize(test_im_formated), key = lambda x: x[0])
+    for symb in neuro_tools.get_symbols(test_im):
+      #img = Image.fromarray(im[0].astype("uint8") * 255)
+      #img.show()
+      min_el = calc()
+      #pool.apply_async(calc).get()
+      a, b = symb[1]
+      draw.text((b, a), u"{0}".format(min_el[0]), (255, 0, 0), font = font)
+    #sorted_res = sorted(self.net.recognize(test_im_formated), key = lambda x: x[0])
+    #for name, res in sorted_res:
+    #  print u"{0}: {1}".format(name, res)
+    #min_el = min(sorted_res, key = lambda x: x[1])
+    #print u"\n{0}: {1}".format(min_el[0], min_el[1])
+    test_im.show()
     t2 = time.time()
-    for name, res in sorted_res:
-      print u"{0}: {1}".format(name, res)
-    min_el = min(sorted_res, key = lambda x: x[1])
-    print u"\n{0}: {1}".format(min_el[0], min_el[1])
     print t2 - t1
 
   def save_to_db(self,

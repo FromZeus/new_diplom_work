@@ -21,6 +21,7 @@ class HopfNet:
     results = []
     for name, neuron in self.neurons.iteritems():
       results.append((name, pool.apply_async(neuron.recognize, (image, )).get()))
+      #results.append((name, neuron.recognize(image)))
     return results
     #for name, res in results:
       #print u"{0}: {1}".format(name, res) 

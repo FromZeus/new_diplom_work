@@ -1,6 +1,10 @@
 import neuro_tools
+from neuro_tools import sign
 import numpy as np
+from numpy import copy
+from numpy import sum as np_sum
 import sys
+import pathos.multiprocessing as mp
 
 class HopfNeuron:
 
@@ -13,27 +17,29 @@ class HopfNeuron:
     self.im_size = im_size
     self.im_size_sq = self.im_size ** 2
     self.img_in_memory = img_in_memory
-    self.mem = np.copy(ext_mem)
+    self.mem = copy(ext_mem)
     if not self.mem:
-      self.mem = np.array([np.arange(self.im_size_sq).astype("float64")] \
+      self.mem = np.array([np.zeros(self.im_size_sq).astype("float64")] \
         * self.im_size_sq)
-      self.mem.fill(0.0)
 
   def learn(self, image):
+    mem = self.mem
+    local_image = image
     for idx1 in xrange(self.im_size_sq):
-      self.mem[idx1] = np.add(self.mem[idx1], image[idx1] / float(self.im_size_sq) * image)
-      self.mem[idx1, idx1] = 0.0
+      mem[idx1] = np.add(mem[idx1], local_image[idx1] / float(self.im_size_sq) * local_image)
+      mem[idx1, idx1] = 0.0
     self.img_in_memory += 1
 
   def recognize(self, image):
+    mem = self.mem
     converg = 0
-    result_img = np.copy(image)
-    for idx in xrange(10):
-      pred_img = np.copy(result_img)
+    result_img = copy(image)
+    for idx in range(8):
+      pred_img = copy(result_img)
       col = 0
-      for idx1 in xrange(self.im_size_sq):
-        assoc = np.sum(pred_img * self.mem[idx1])
-        result_img[idx1] = 1 if neuro_tools.sign(assoc) else -1
+      for idx1 in range(self.im_size_sq):
+        assoc = np_sum(pred_img * mem[idx1])
+        result_img[idx1] = 1 if sign(assoc) else -1
         if pred_img[idx1] == result_img[idx1]:
           col += 1
         converg += abs(pred_img[idx1] - result_img[idx1])

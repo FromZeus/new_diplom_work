@@ -8,7 +8,9 @@ from skimage.transform import rescale
 from skimage.morphology import dilation
 from skimage.morphology import erosion
 from skimage.morphology import square
+from skimage.measure import label
 from collections import deque
+from scipy.ndimage import find_objects
 import Image
 import neuronet
 import dill
@@ -55,6 +57,71 @@ def get_distorted(image, params, orient = "horizont"):
         np_image[:, idx] = np.roll(np_image[:, idx], int(shift(idx)))
 
   return Image.fromarray(np_image)
+
+def dilatation_cross_numb(image, numb):
+  block_size = 50
+  binary_adaptive = dilation(threshold_adaptive(np.array(image.convert("L")),
+    block_size, offset=10), square(numb))
+  return get_cross_numb(binary_adaptive)
+
+def get_cross_numb(bin_image):
+  col = np.zeros(bin_image.shape[0]).astype("uint32")
+  for idx_y, y_el in enumerate(bin_image):
+    pred = y_el[0]
+    for x_el in y_el:
+      if x_el != pred:
+        pred = x_el
+        col[idx_y] += 1
+  return np.average(col)
+
+def bin_search(func, f_args, range_val, val, inc_dec):
+  new_range_val = range_val
+  for i in xrange(4):
+    midle = (new_range_val[1] - new_range_val[0]) / 2
+    new_f_args = f_args + [midle]
+    res = func(*new_f_args)
+    if inc_dec == "inc":
+      if res > val:
+        new_range_val = (new_range_val[0], midle)
+      elif res < val:
+        new_range_val = (midle, new_range_val[1])
+    elif inc_dec == "dec":
+      if res > val:
+        new_range_val = (midle, new_range_val[1])
+      elif res < val:
+        new_range_val = (new_range_val[0], midle)
+
+  if (new_range_val[1] - new_range_val[0]) % 2 == 0:
+    midle -= 1
+
+  return midle
+
+def get_symbols(image):
+  dil_eros = bin_search(dilatation_cross_numb, [image], (1, 16), 1.0, "dec")
+  block_size = 50
+  binary_adaptive_image = erosion(dilation(threshold_adaptive(
+    np.array(image.convert("L")), block_size, offset=10),
+      square(dil_eros)), square(dil_eros))
+
+  all_labels = label(binary_adaptive_image, background = True)
+  objects = find_objects(all_labels)
+
+  av_width = av_height = 0
+  symbols = []
+
+  for obj in objects:
+    symb = (binary_adaptive_image[obj], (obj[0].start, obj[1].start))
+    symbols.append(symb)
+    av_height += symb[0].shape[0]
+    av_width += symb[0].shape[1]
+
+  av_width /= float(len(objects))
+  av_height /= float(len(objects))
+
+  symbols = [symb for symb in symbols
+    if symb[0].shape[0] >= av_height and symb[0].shape[1] >= av_width]
+
+  return symbols
 
 def fill_with_bfs(pixels, old_bri, new_bri, size_y, size_x, y, x):
   used = [[False] * size_x for i in xrange(size_y)]
