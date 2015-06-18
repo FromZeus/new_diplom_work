@@ -5,6 +5,7 @@ from numpy import copy
 from numpy import sum as np_sum
 import sys
 import pathos.multiprocessing as mp
+import dummy
 
 class HopfNeuron:
 
@@ -30,10 +31,10 @@ class HopfNeuron:
       mem[idx1, idx1] = 0.0
     self.img_in_memory += 1
 
-  def recognize(self, image):
+  def recognize(self, image, char, qu):
     mem = self.mem
     converg = 0
-    result_img = copy(image)
+    result_img = copy(image) #np.array(dummy.shared_array) #copy(image)
     for idx in range(8):
       pred_img = copy(result_img)
       col = 0
@@ -44,5 +45,7 @@ class HopfNeuron:
           col += 1
         converg += abs(pred_img[idx1] - result_img[idx1])
       if col == self.im_size_sq:
-        return converg / (self.img_in_memory ** .5)
-    return sys.float_info.max
+        qu.put((char, (converg / (self.img_in_memory ** .5))))
+        #return converg / (self.img_in_memory ** .5)
+    qu.put((char, sys.float_info.max))
+    #return sys.float_info.max

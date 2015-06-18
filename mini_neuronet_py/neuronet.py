@@ -1,5 +1,12 @@
 import neuron
 import pathos.multiprocessing as mp
+from multiprocessing import Process, Queue
+import multiprocessing as def_mp
+import ctypes
+import dummy
+
+def test_init(arr):
+  dummy.shared_array = arr
 
 class HopfNet:
 
@@ -17,10 +24,17 @@ class HopfNet:
     self.neurons[name].learn(image)
 
   def recognize(self, image):
-    pool = mp.Pool()
     results = []
+    qu = Queue()
+    mp_image = def_mp.Array(ctypes.c_int, image)
+    pool = mp.Pool(initializer = test_init, initargs = (mp_image, ))
     for name, neuron in self.neurons.iteritems():
-      results.append((name, pool.apply_async(neuron.recognize, (image, )).get()))
+      p = Process(target = neuron.recognize, args = (image, name, qu))
+      p.start()
+      p.join()
+    while not qu.empty():
+      results.append(qu.get())
+      #results.append((name, pool.apply_async(neuron.recognize).get()))
       #results.append((name, neuron.recognize(image)))
     return results
     #for name, res in results:

@@ -39,6 +39,8 @@ from bson.objectid import ObjectId
 from bson.errors import InvalidId
 
 import hashlib
+import os
+os.system("taskset -p 0xff %d" % os.getpid())
 
 IM_SIZE = 32
 
@@ -63,7 +65,7 @@ class NeuroLayout(FloatLayout):
     instance_hash = line["InstanceHash"]
     load_mem = line["LoadMemory"]
 
-  #pdb.set_trace()
+  pdb.set_trace()
 
   def learn(self, path = mem_directory):
     print "Re-education in progress..."
