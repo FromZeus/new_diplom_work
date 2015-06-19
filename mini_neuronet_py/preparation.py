@@ -18,6 +18,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', dest='config', help='Configuration YAML')
 args = parser.parse_args()
 
+IM_SIZE = 32
+
 def main():
   #pdb.set_trace()
 
@@ -53,14 +55,15 @@ def main():
         [("dilation", 2)]))
       images[name].append(neuro_tools.get_distorted(el,
         [("erosion", 1)]))
-      rescaled1 = rescaled_form(el, (2.5, 1), (32, 32))
-      rescaled2 = rescaled_form(el, (1, 2.5), (32, 32))
+      rescaled1 = rescaled_form(el, (2.5, 1), (IM_SIZE, IM_SIZE))
+      rescaled2 = rescaled_form(el, (1, 2.5), (IM_SIZE, IM_SIZE))
       images[name].append(rescaled1)
       images[name].append(rescaled2)
 
   for name, sect in images.iteritems():
     for idx1, el in enumerate(sect):
-      for idx2, rotated_image in enumerate(neuro_tools.get_rotated(el.resize((32, 32)), 0, 30, 30)):
+      for idx2, rotated_image in enumerate(
+        neuro_tools.get_rotated(el.resize((IM_SIZE, IM_SIZE)), 0, 30, 30)):
         filled_rotated_image = neuro_tools.fill_edges(rotated_image, 0, 255)
         if filled_rotated_image.mode != "RGBA":
           filled_rotated_image = filled_rotated_image.convert("RGBA")

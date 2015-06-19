@@ -65,7 +65,7 @@ class NeuroLayout(FloatLayout):
     instance_hash = line["InstanceHash"]
     load_mem = line["LoadMemory"]
 
-  pdb.set_trace()
+  #pdb.set_trace()
 
   def learn(self, path = mem_directory):
     print "Re-education in progress..."
@@ -102,6 +102,7 @@ class NeuroLayout(FloatLayout):
       return min_el
      
     t1 = time.time()
+    min_el = ("a", 1)
     for symb in neuro_tools.get_symbols(test_im):
       #img = Image.fromarray(im[0].astype("uint8") * 255)
       #img.show()
@@ -109,6 +110,8 @@ class NeuroLayout(FloatLayout):
       #pool.apply_async(calc).get()
       a, b = symb[1]
       draw.text((b, a), u"{0}".format(min_el[0]), (255, 0, 0), font = font)
+    pool.close()
+    pool.join()
     #sorted_res = sorted(self.net.recognize(test_im_formated), key = lambda x: x[0])
     #for name, res in sorted_res:
     #  print u"{0}: {1}".format(name, res)
